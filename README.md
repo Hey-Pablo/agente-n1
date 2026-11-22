@@ -1,5 +1,7 @@
 # Agente N1
 
+> **Demonstração:** em breve
+
 > **Status: em desenvolvimento.** O código entra aos poucos; abaixo está o planejamento do projeto.
 
 ## O que é
@@ -12,7 +14,17 @@ Agente com uso de ferramentas, limites de segurança, confirmação antes de agi
 
 ## Stack
 
-Node.js e TypeScript com o SDK oficial da Anthropic (`claude-opus-5-5` como padrão). O laço do agente pode usar o Tool Runner do SDK ou ser escrito à mão. Ferramentas declaradas com `strict: true`, para os argumentos chegarem sempre no formato do esquema. React para o widget e PostgreSQL para os registros.
+Node.js e TypeScript com API compatível com OpenAI configurável. PostgreSQL para os registros e React para o widget estão planejados.
+
+## Estado da implementação
+
+O núcleo inicial limita as etapas, valida a entrada e solicita os dados e a confirmação antes de abrir chamados. A abertura efetiva, persistência de confirmação, integrações, contratos das ferramentas, registros em PostgreSQL e interface ainda não estão implementados. Este código não deve ser usado em produção.
+
+Para executar os testes: `npm ci --ignore-scripts` e `npm test`.
+
+## Configurar sua chave
+
+A integração com provedor de IA ainda não está implementada. Quando estiver disponível, copie `.env.example` para `.env` e informe sua própria chave no campo `API_KEY`, obtida no provedor compatível escolhido. Nunca publique o arquivo `.env`.
 
 ## Estrutura
 
