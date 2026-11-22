@@ -16,15 +16,17 @@ Agente com uso de ferramentas, limites de segurança, confirmação antes de agi
 
 Node.js e TypeScript com API compatível com OpenAI configurável. PostgreSQL para os registros e React para o widget estão planejados.
 
-## Estado da implementação
+## Componentes do servidor
 
-O núcleo inicial limita as etapas, valida a entrada e solicita os dados e a confirmação antes de abrir chamados. A abertura efetiva, persistência de confirmação, integrações, contratos das ferramentas, registros em PostgreSQL e interface ainda não estão implementados. Este código não deve ser usado em produção.
+O projeto contém módulos TypeScript para o laço, contratos e adaptadores das quatro ferramentas, cliente de IA compatível com OpenAI e armazenamento PostgreSQL. O serviço é uma biblioteca; a camada HTTP, autenticação e widget ainda não existem. Não exponha os módulos diretamente à internet. A camada de aplicação deve validar a identidade, vincular a conversa ao usuário e construir a sessão a partir de autenticação confiável. A confirmação somente aceita `sim` como resposta imediata e expira em 15 minutos; a abertura não é repetida automaticamente após falha da integração.
 
-Para executar os testes: `npm ci --ignore-scripts` e `npm test`.
+`criarServico` recebe configuração explícita e um token do usuário para chamar o RAG e o Help Desk sob as políticas RLS. O endpoint RAG exige uma conversa própria já criada; a categoria precisa existir no Help Desk. O encaminhamento humano real informa que não há fila integrada, sem alegar que ocorreu encaminhamento. O custo é desconhecido (`null`) se os preços por milhão de tokens não forem informados. Os registros contêm conversas: use apenas dados fictícios e proteja o banco; não forneça senhas ou tokens nas mensagens.
+
+Para teste local: `npm ci --ignore-scripts` e `npm test`. Os testes usam modelo falso, respostas HTTP simuladas e PGlite. Para testar integrações reais no PC, configure PostgreSQL, projetos 6 e 11, suas políticas RLS, um usuário autenticado, conversa RAG e categoria existentes; forneça suas próprias credenciais ao aplicativo que consome a biblioteca. Sem esses serviços, use os adaptadores simulados. A interface de configuração por variáveis de ambiente e o transporte HTTP ainda precisam ser implementados antes de executar o serviço como aplicação.
 
 ## Configurar sua chave
 
-A integração com provedor de IA ainda não está implementada. Quando estiver disponível, copie `.env.example` para `.env` e informe sua própria chave no campo `API_KEY`, obtida no provedor compatível escolhido. Nunca publique o arquivo `.env`.
+Obtenha sua chave no provedor compatível com OpenAI escolhido e mantenha-a em `API_KEY` no arquivo `.env` local, nunca no repositório. Consulte `.env.example`. A aplicação que consome o serviço deve carregar e passar essas configurações; o carregamento automático ainda não está implementado.
 
 ## Estrutura
 
