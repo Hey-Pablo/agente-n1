@@ -16,17 +16,19 @@ Agente com uso de ferramentas, limites de segurança, confirmação antes de agi
 
 Node.js e TypeScript com API compatível com OpenAI configurável. PostgreSQL para os registros e React para o widget estão planejados.
 
-## Componentes do servidor
+## Executar o servidor
 
-O projeto contém módulos TypeScript para o laço, contratos e adaptadores das quatro ferramentas, cliente de IA compatível com OpenAI e armazenamento PostgreSQL. O serviço é uma biblioteca; a camada HTTP, autenticação e widget ainda não existem. Não exponha os módulos diretamente à internet. A camada de aplicação deve validar a identidade, vincular a conversa ao usuário e construir a sessão a partir de autenticação confiável. A confirmação somente aceita `sim` como resposta imediata e expira em 15 minutos; a abertura não é repetida automaticamente após falha da integração.
+Requisitos: Node.js 20 ou superior, PostgreSQL e projetos RAG e Help Desk configurados. Instale com `npm ci --ignore-scripts`, copie `.env.example` para `.env` e configure as variáveis. Carregue o arquivo no ambiente antes de executar `npm run build` e `npm start` (por exemplo, `node --env-file=.env dist/main.js`). O servidor escuta somente em `127.0.0.1:3000`, ou na porta de `PORT`. Use um proxy HTTPS autenticado para acesso remoto.
 
-`criarServico` recebe configuração explícita e um token do usuário para chamar o RAG e o Help Desk sob as políticas RLS. O endpoint RAG exige uma conversa própria já criada; a categoria precisa existir no Help Desk. O encaminhamento humano real informa que não há fila integrada, sem alegar que ocorreu encaminhamento. O custo é desconhecido (`null`) se os preços por milhão de tokens não forem informados. Os registros contêm conversas: use apenas dados fictícios e proteja o banco; não forneça senhas ou tokens nas mensagens.
+`BASE_URL`, `API_KEY` e `MODEL` configuram um provedor compatível com OpenAI; obtenha sua própria chave no provedor e mantenha-a fora do Git. `DATABASE_URL` aponta ao PostgreSQL; `RAG_URL` e `HELPDESK_URL` apontam aos serviços; as chaves públicas `RAG_ANON_KEY` e `HELPDESK_ANON_KEY`, `AUTH_URL` e `CATEGORIA_ID` devem corresponder aos projetos. O JWT apresentado precisa ser aceito pelo serviço de autenticação e pelas políticas RLS dos dois projetos. Crie a conversa RAG e a categoria antes do teste. `FERRAMENTAS_SIMULADAS=true` simula busca e chamados; a autenticação e o banco continuam necessários.
 
-Para teste local: `npm ci --ignore-scripts` e `npm test`. Os testes usam modelo falso, respostas HTTP simuladas e PGlite. Para testar integrações reais no PC, configure PostgreSQL, projetos 6 e 11, suas políticas RLS, um usuário autenticado, conversa RAG e categoria existentes; forneça suas próprias credenciais ao aplicativo que consome a biblioteca. Sem esses serviços, use os adaptadores simulados. A interface de configuração por variáveis de ambiente e o transporte HTTP ainda precisam ser implementados antes de executar o serviço como aplicação.
+Envie `POST /chat` com `Authorization: Bearer <JWT>` e JSON contendo `mensagem`, `conversaId` e `ragConversaId`. O servidor verifica o JWT e associa o identificador da conversa ao usuário autenticado. Antes de abrir chamado, solicita os campos ausentes e exige resposta imediata `sim` ao resumo; a confirmação expira após 15 minutos. O escalonamento registra item pendente na tabela `escalonamentos`; a equipe deve consultar e atender essa fila pelo banco, pois ainda não há painel de atendimento ou notificação automática. Registros contêm conversas: use dados fictícios, proteja o banco e não envie senhas ou tokens em mensagens.
 
-## Configurar sua chave
+## Testes e configuração da chave
 
-Obtenha sua chave no provedor compatível com OpenAI escolhido e mantenha-a em `API_KEY` no arquivo `.env` local, nunca no repositório. Consulte `.env.example`. A aplicação que consome o serviço deve carregar e passar essas configurações; o carregamento automático ainda não está implementado.
+Execute `npm test`. Os testes usam modelo falso, HTTP simulado e PGlite. `npm audit --omit=dev` verifica as dependências de produção. Para testar integrações reais no PC, configure PostgreSQL e os projetos 6 e 11, crie usuário, conversa RAG e categoria fictícios e verifique RLS, busca, status, comentário público e abertura confirmada. Nenhuma credencial real é necessária nos testes automatizados.
+
+Obtenha a chave de IA no provedor escolhido e coloque-a em `API_KEY` no `.env` local. Nunca publique esse arquivo. Veja os nomes e valores fictícios em `.env.example`.
 
 ## Estrutura
 
