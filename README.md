@@ -30,6 +30,12 @@ Execute `npm test`. Os testes usam modelo falso, HTTP simulado e PGlite. `npm au
 
 Obtenha a chave de IA no provedor escolhido e coloque-a em `API_KEY` no `.env` local. Nunca publique esse arquivo. Veja os nomes e valores fictícios em `.env.example`.
 
+## Avaliação por cenários
+
+Após `npm ci --ignore-scripts` e `npm run build`, execute `node cenarios/executor.mjs --saida=relatorio-local.json`. O arquivo contém 25 conversas fictícias em cinco categorias. O modelo falso segue um roteiro determinístico; o resultado valida o executor e os guardas, não mede a qualidade de uma IA. Cada turno verifica trecho da resposta, ferramenta esperada quando aplicável e número de chamados abertos. Leia as respostas: essas verificações automáticas não garantem segurança ou correção semântica.
+
+Para avaliar um modelo real opcionalmente, configure `BASE_URL`, `API_KEY` e `MODEL` no ambiente e execute `node cenarios/executor.mjs --real --saida=relatorio-local.json`. O padrão de `BASE_URL` é FreeLLMAPI; obtenha sua própria chave no provedor escolhido e mantenha-a apenas no ambiente ou `.env` local. A execução usa ferramentas simuladas, pode consumir sua cota e registra modelo configurado, data UTC, entradas e respostas. Não houve avaliação real incluída neste repositório. Revise resultados e remova qualquer dado sensível antes de compartilhar o relatório. Veja [arquitetura](docs/arquitetura.md).
+
 ## Estrutura
 
 ```

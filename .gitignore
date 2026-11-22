@@ -10,3 +10,6 @@ coverage/
 Thumbs.db
 .vscode/
 .idea/
+
+# Relatórios locais de avaliação
+relatorio-local.json
