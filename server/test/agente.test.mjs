@@ -39,3 +39,11 @@ test('confirmação explícita consome resumo salvo antes de abrir', async () =>
  assert.match(await executar({...entrada,mensagem:'sim'}),/1043/); assert.equal(aberto,1);
  assert.match(await executar({...entrada,mensagem:'sim'}),/confirma/i); assert.equal(aberto,1);
 });
+
+test('uma resposta diferente de sim invalida a confirmação anterior', async () => {
+ let pendente; let aberto=0; let rodada=0;
+ const registros={preparar:async (_,d)=>{pendente=d},consumir:async()=>{const d=pendente;pendente=null;return d},consumirUso:async()=>true};
+ const modelo={responder:async()=>++rodada===1 ? {tool_calls:[{id:'1',function:{name:'abrirChamado',arguments:JSON.stringify({filial:'12',sistema:'PDV',erro:'falha',desde:'hoje'})}}]} : {content:'Tudo bem.'}};
+ const entrada={modelo,ferramentas:{abrirChamado:async()=>{aberto++;return {id:1}}},registrar:async()=>{},registros,conversaId:'c1'};
+ await executar({...entrada,mensagem:'abrir'}); await executar({...entrada,mensagem:'não'}); await executar({...entrada,mensagem:'sim'}); assert.equal(aberto,0);
+});
