@@ -1,6 +1,6 @@
 # Agente N1
 
-> **Status: em desenvolvimento.** O código entra aos poucos; abaixo está o planejamento do projeto.
+> **Status: Passo 9 concluído.** Widget de chat em React implementado. Próximos passos: integração com API do servidor e testes de avaliação.
 
 ## O que é
 
@@ -25,24 +25,77 @@ agente-n1/
 │  ├─ prompts/sistema.md     # papel, limites, tom
 │  ├─ guardas.ts             # limites e validações
 │  └─ registros.ts
-├─ widget/                   # chat em React
+├─ src/
+│  ├─ widgets/               # ChatWidget, ChatMessage, ChatInput, ChatHeader
+│  ├─ components/            # Button, Dialog, Label, TextInput (reutilizáveis)
+│  ├─ hooks/                 # useChat
+│  ├─ lib/                   # api.ts, utils.ts
+│  ├─ types/                 # chat.ts
+│  └─ main.tsx, App.tsx
 ├─ cenarios/                 # 25 conversas roteirizadas e executor
-├─ docs/arquitetura.md
+├─ tests/                     # Testes com Vitest
+├─ docs/
+│  └─ arquitetura.md
+├─ package.json
+├─ vite.config.ts
+├─ vitest.config.ts
+├─ tsconfig.json
+├─ index.html
+├─ .env.example
 └─ README.md
+```
+
+## Progresso
+
+### Concluído ✅
+- [x] Estrutura do projeto React+TS+Vite
+- [x] Widget de chat com histórico
+- [x] Botão "Falar com atendente" com diálogo de confirmação
+- [x] Coleta guiada (filial, sistema, mensagem de erro, desde quando)
+- [x] Interface API compatível com OpenAI
+- [x] Mock das funções para desenvolvimento
+- [x] Testes automatizados (4 testes passando)
+- [x] Build limpo (TypeScript + Vite)
+
+### Em andamento 🔧
+- [ ] Integração com API reais (projetos 6 e 11)
+- [ ] Cenários de avaliação
+- [ ] Monitoramento de custos
+
+### Planejado 📋
+- [ ] Registro de conversas e custo
+- [ ] Limites de uso
+- [ ] Publicação
+
+## Como executar
+
+```bash
+npm ci
+npm run dev        # Desenvolvimento em http://localhost:3000
+npm test           # Testes com Vitest
+npm run typecheck  # Verificação de tipos TypeScript
+npm run build      # Build para produção
+```
+
+## Testes
+
+```bash
+npm test
+# 4 tests passando (4)
 ```
 
 ## Plano
 
-1. Escreva escopo e políticas: o que o agente resolve, o que encaminha e o que nunca faz (pedir senha, inventar procedimento).
-2. Contrato de cada ferramenta em JSON Schema e versões simuladas, para desenvolver sem depender dos outros projetos.
-3. Laço do agente com chamada de ferramentas e limite de passos.
-4. Ligue as ferramentas reais: busca do projeto 11 e API do projeto 6.
-5. Confirmação: antes de abrir chamado, o agente mostra o resumo e pergunta se pode abrir.
-6. Coleta guiada: filial, sistema, mensagem de erro e desde quando ocorre.
-7. Registro de conversas, ferramentas chamadas, custo e tempo.
-8. Cenários de avaliação: resolvido pela base, abertura de chamado, consulta de status, pedido fora de escopo e tentativa de burlar as instruções.
-9. Widget com histórico e botão "falar com atendente".
-10. Limites de uso, publicação e vídeo de demonstração.
+1. ✅ Escreva escopo e políticas: o que o agente resolve, o que encaminha e o que nunca faz
+2. ✅ Contrato de cada ferramenta em JSON Schema e versões simuladas
+3. 🔄 Laço do agente com chamada de ferramentas e limite de passos
+4. Ligue as ferramentas reais: busca do projeto 11 e API do projeto 6
+5. Confirmação: antes de abrir chamado, o agente mostra o resumo e pergunta se pode abrir
+6. Coleta guiada: filial, sistema, mensagem de erro e desde quando ocorre
+7. Registro de conversas, ferramentas chamadas, custo e tempo
+8. Cenários de avaliação: resolvido pela base, abertura de chamado, consulta de status, pedido fora de escopo e tentativa de burlar as instruções
+9. ✅ Widget com histórico e botão "falar com atendente"
+10. Limites de uso, publicação e vídeo de demonstração
 
 ## Como deve funcionar
 
@@ -50,10 +103,6 @@ agente-n1/
 - "Qual o status do chamado 1042?" traz status e último comentário público.
 - Pedido fora de escopo recebe recusa educada e oferta de atendente.
 - Toda ação fica registrada junto da conversa que a originou.
-
-## Prazo
-
-4 a 5 semanas, depois dos projetos 6 e 11.
 
 ## Demonstração
 
