@@ -9,6 +9,10 @@ type Dependencias = {
       ragConversaId: string;
     },
   ) => Promise<string>;
+  escalar?: (
+    motivo: string,
+    sessao: { usuarioId: string; conversaId: string },
+  ) => Promise<string>;
 };
 export function criarAplicacao(deps: Dependencias) {
   return async (req: Request): Promise<Response> => {
@@ -35,7 +39,8 @@ export function criarAplicacao(deps: Dependencias) {
       const b = body as Record<string, unknown>;
       if (
         Object.keys(b).some(
-          (k) => !["mensagem", "conversaId", "ragConversaId"].includes(k),
+          (k) =>
+            !["mensagem", "conversaId", "ragConversaId", "acao"].includes(k),
         ) ||
         typeof b.mensagem !== "string" ||
         !b.mensagem.trim() ||
@@ -46,6 +51,25 @@ export function criarAplicacao(deps: Dependencias) {
         !/^[\w-]{1,100}$/.test(b.ragConversaId)
       )
         return new Response("Entrada inválida", { status: 400 });
+      if (b.acao !== undefined && b.acao !== "escalar")
+        return new Response("Entrada inválida", { status: 400 });
+      if (b.acao === "escalar") {
+        if (!deps.escalar || b.mensagem.length > 500)
+          return new Response("Entrada inválida", { status: 400 });
+        const protocolo = await deps.escalar(b.mensagem.trim(), {
+          usuarioId: usuario.id,
+          conversaId: `${usuario.id}:${b.conversaId}`,
+        });
+        return Response.json(
+          { resposta: "Pedido encaminhado a um atendente.", protocolo },
+          {
+            headers: {
+              "Cache-Control": "no-store",
+              "X-Content-Type-Options": "nosniff",
+            },
+          },
+        );
+      }
       const resposta = await deps.responder(b.mensagem, {
         usuarioId: usuario.id,
         token,

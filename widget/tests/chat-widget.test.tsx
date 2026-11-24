@@ -16,3 +16,13 @@ it('envia mensagem autenticada e apresenta resposta e confirmação', async () =
  await user.click(screen.getByRole('button',{name:'Cancelar'}));
  expect(fetcher).toHaveBeenLastCalledWith('/chat', expect.objectContaining({body:expect.stringContaining('não')}));
 });
+
+it('botão falar com atendente pede o encaminhamento direto', async () => {
+ const fetcher = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({resposta:'Pedido encaminhado a um atendente.',protocolo:'7'}), {status:200, headers:{'Content-Type':'application/json'}}));
+ const user = userEvent.setup(); render(<App />);
+ await user.type(screen.getByLabelText('JWT de acesso'), 'jwt-ficticio');
+ await user.type(screen.getByLabelText('ID da conversa RAG'), 'rag-123');
+ await user.click(screen.getByRole('button',{name:'Falar com atendente'}));
+ expect(await screen.findByText(/encaminhado a um atendente/)).toBeInTheDocument();
+ expect(fetcher).toHaveBeenCalledWith('/chat', expect.objectContaining({body:expect.stringContaining('"acao":"escalar"')}));
+});

@@ -2,7 +2,7 @@
 
 > **Demonstração:** em breve
 
-> **Status: em desenvolvimento.** O código entra aos poucos; abaixo está o planejamento do projeto.
+> **Status: em desenvolvimento.** Servidor, ferramentas, avaliação por cenários e widget de chat (`widget/`) já estão no repositório; falta publicação e vídeo.
 
 ## O que é
 

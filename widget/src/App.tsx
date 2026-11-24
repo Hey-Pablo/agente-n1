@@ -11,13 +11,13 @@ export function App() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const pending = messages.at(-1)?.role === 'assistant' && /Você confirma a abertura do chamado\?/i.test(messages.at(-1)?.text || '');
-  async function send(text: string) {
+  async function send(text: string, acao?: 'escalar') {
     if (!token.trim() || !ragId.trim()) { setError('Informe o JWT de acesso e o ID da conversa RAG.'); return; }
     setBusy(true); setError('');
     const next: Message[] = [...messages, { role: 'user', text }];
     setMessages(next);
     try {
-      const response = await fetch('/chat', { method:'POST', headers: { 'Content-Type':'application/json', Authorization:`Bearer ${token}` }, body:JSON.stringify({ mensagem:text, conversaId:conversationId, ragConversaId:ragId }) });
+      const response = await fetch('/chat', { method:'POST', headers: { 'Content-Type':'application/json', Authorization:`Bearer ${token}` }, body:JSON.stringify({ mensagem:text, conversaId:conversationId, ragConversaId:ragId, ...(acao ? { acao } : {}) }) });
       if (!response.ok) throw new Error('Falha');
       const data: unknown = await response.json();
       if (!data || typeof data !== 'object' || !('resposta' in data) || typeof data.resposta !== 'string') throw new Error('Resposta inválida');
@@ -33,6 +33,6 @@ export function App() {
     {error && <p role="alert">{error}</p>}
     {pending && <div><button disabled={busy} onClick={() => void send('sim')}>Confirmar</button><button disabled={busy} onClick={() => void send('não')}>Cancelar</button></div>}
     <form onSubmit={e => { e.preventDefault(); if(input.trim()) { void send(input.trim()); setInput(''); } }}><label>Mensagem<textarea value={input} maxLength={2000} onChange={e => setInput(e.target.value)} /></label><button disabled={busy || !input.trim()}>Enviar</button></form>
-    <button disabled={busy} onClick={() => void send('Quero falar com um atendente humano.')}>Falar com atendente</button>
+    <button disabled={busy} onClick={() => void send('Quero falar com um atendente humano.', 'escalar')}>Falar com atendente</button>
   </main>;
 }

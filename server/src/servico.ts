@@ -101,6 +101,21 @@ export async function criarServico(c: Config) {
           sessao.historico ?? (await registros.historico(sessao.conversaId)),
       });
     },
+    /** Encaminhamento direto pedido pelo usuário autenticado, sem passar pelo modelo. */
+    async escalar(
+      motivo: string,
+      sessao: { usuarioId: string; conversaId: string },
+    ) {
+      if (!sessao.usuarioId || !sessao.conversaId || !motivo.trim())
+        throw new Error("Sessão inválida");
+      const id = String(await registros.escalar(sessao.conversaId, motivo));
+      await registros.registrar(sessao.conversaId, {
+        ferramenta: "escalarHumano",
+        origem: "botao",
+        protocolo: id,
+      });
+      return id;
+    },
     async fechar() {
       await pool.end();
     },
