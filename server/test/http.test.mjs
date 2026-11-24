@@ -84,3 +84,47 @@ test("configuração exige segredo e usa BASE_URL padrão", () => {
   });
   assert.match(c.baseUrl, /freellmapi/i);
 });
+
+test("HTTP escalar chama o encaminhamento direto com a identidade verificada", async () => {
+  let chamado;
+  let respondeu = 0;
+  const app = criarAplicacao({
+    autenticar: async () => ({ id: "usuario" }),
+    responder: async () => {
+      respondeu++;
+      return "ok";
+    },
+    escalar: async (motivo, s) => {
+      chamado = { motivo, s };
+      return "7";
+    },
+  });
+  const req = (body) =>
+    new Request("http://localhost/chat", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer teste",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+  const ok = await app(
+    req({
+      acao: "escalar",
+      mensagem: "Quero um atendente",
+      conversaId: "a",
+      ragConversaId: "b",
+    }),
+  );
+  assert.equal(ok.status, 200);
+  assert.equal((await ok.json()).protocolo, "7");
+  assert.deepEqual(chamado, {
+    motivo: "Quero um atendente",
+    s: { usuarioId: "usuario", conversaId: "usuario:a" },
+  });
+  assert.equal(respondeu, 0);
+  const ruim = await app(
+    req({ acao: "outra", mensagem: "x", conversaId: "a", ragConversaId: "b" }),
+  );
+  assert.equal(ruim.status, 400);
+});

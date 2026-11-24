@@ -9,6 +9,7 @@ const servico = await criarServico(config);
 const app = criarAplicacao({
   autenticar: autenticador(config.authUrl, config.helpdeskKey),
   responder: servico.responder,
+  escalar: servico.escalar,
 });
 const porta = Number(process.env.PORT ?? 3000);
 if (!Number.isSafeInteger(porta) || porta < 1 || porta > 65535)

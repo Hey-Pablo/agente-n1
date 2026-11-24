@@ -2,7 +2,7 @@
 
 > **Demonstração:** em breve
 
-> **Status: em desenvolvimento.** O código entra aos poucos; abaixo está o planejamento do projeto.
+> **Status: em desenvolvimento.** Servidor, ferramentas, avaliação por cenários e widget de chat (`widget/`) já estão no repositório; falta publicação e vídeo.
 
 ## O que é
 
@@ -14,7 +14,7 @@ Agente com uso de ferramentas, limites de segurança, confirmação antes de agi
 
 ## Stack
 
-Node.js e TypeScript com API compatível com OpenAI configurável. PostgreSQL para os registros e React para o widget estão planejados.
+Node.js e TypeScript com API compatível com OpenAI configurável. PostgreSQL para os registros e React para o widget estão em desenvolvimento.
 
 ## Executar o servidor
 
@@ -23,6 +23,10 @@ Requisitos: Node.js 20 ou superior, PostgreSQL e projetos RAG e Help Desk config
 `BASE_URL`, `API_KEY` e `MODEL` configuram um provedor compatível com OpenAI; obtenha sua própria chave no provedor e mantenha-a fora do Git. `DATABASE_URL` aponta ao PostgreSQL; `RAG_URL` e `HELPDESK_URL` apontam aos serviços; as chaves públicas `RAG_ANON_KEY` e `HELPDESK_ANON_KEY`, `AUTH_URL` e `CATEGORIA_ID` devem corresponder aos projetos. O JWT apresentado precisa ser aceito pelo serviço de autenticação e pelas políticas RLS dos dois projetos. Crie a conversa RAG e a categoria antes do teste. `FERRAMENTAS_SIMULADAS=true` simula busca e chamados; a autenticação e o banco continuam necessários.
 
 Envie `POST /chat` com `Authorization: Bearer <JWT>` e JSON contendo `mensagem`, `conversaId` e `ragConversaId`. O servidor verifica o JWT e associa o identificador da conversa ao usuário autenticado. Antes de abrir chamado, solicita os campos ausentes e exige resposta imediata `sim` ao resumo; a confirmação expira após 15 minutos. O escalonamento registra item pendente na tabela `escalonamentos`; a equipe deve consultar e atender essa fila pelo banco, pois ainda não há painel de atendimento ou notificação automática. Registros contêm conversas: use dados fictícios, proteja o banco e não envie senhas ou tokens em mensagens.
+
+## Widget de atendimento
+
+Execute `cd widget && npm ci && npm run dev` com o servidor local ativo. Informe o JWT do usuário e o ID de uma conversa RAG existente. O JWT permanece em memória; o histórico fica na aba. O proxy Vite encaminha `/chat` ao servidor. Para uso remoto, configure proxy HTTPS autenticado na mesma origem. O botão de atendente envia uma solicitação ao agente, que decide chamar a ferramenta de escalonamento; o servidor não expõe uma rota direta. Veja [instruções do widget](widget/README.md).
 
 ## Testes e configuração da chave
 
