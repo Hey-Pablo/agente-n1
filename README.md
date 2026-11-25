@@ -2,7 +2,19 @@
 
 > **Demonstração:** em breve
 
-> **Status: em desenvolvimento.** Servidor, ferramentas, avaliação por cenários e widget de chat (`widget/`) já estão no repositório; falta publicação e vídeo.
+> **Status: pronto para revisão.** Servidor, ferramentas, avaliação por cenários e widget de chat (`widget/`) estão na `main`, com testes automatizados (modelo falso, PGlite e API simulada). Falta apenas rodar com um provedor de IA real e gravar o vídeo da demonstração.
+
+## Configurar sua chave
+
+Cada pessoa usa a própria chave; nenhuma chave fica no repositório.
+
+1. Escolha um provedor compatível com a API da OpenAI (o FreeLLMAPI é o padrão sugerido; qualquer outro serve).
+2. Crie a chave no painel do provedor.
+3. Copie `.env.example` para `.env`.
+4. Preencha `BASE_URL`, `API_KEY` e `MODEL` no `.env`.
+5. Preencha também `RAG_URL`/`RAG_ANON_KEY` (base de conhecimento) e `HELPDESK_URL`/`HELPDESK_ANON_KEY` (chamados) se for usar as ferramentas reais. Sem isso, use as versões simuladas das ferramentas.
+6. A chave é lida só pelo servidor e nunca vai para o navegador. Os testes usam modelo falso e não precisam de chave.
+
 
 ## O que é
 
