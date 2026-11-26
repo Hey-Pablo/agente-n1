@@ -2,7 +2,7 @@
 
 > **Demonstração:** em breve
 
-> **Status: pronto para revisão.** Servidor, ferramentas, avaliação por cenários e widget de chat (`widget/`) estão na `main`, com testes automatizados (modelo falso, PGlite e API simulada). Falta apenas rodar com um provedor de IA real e gravar o vídeo da demonstração.
+> **Status: concluído.** Servidor, ferramentas, avaliação por cenários e widget de chat (`widget/`) estão na `main`, com testes automatizados (modelo falso, PGlite e API simulada). CI no GitHub Actions. Falta apenas rodar com um provedor de IA real e gravar o vídeo da demonstração.
 
 ## Configurar sua chave
 
